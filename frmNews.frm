@@ -161,17 +161,15 @@ Dim i As Integer
 Dim oldText As String
 Dim tts
 Dim SpeakHeadLine As String
-
+Dim SpeakThisText As String
 Private Sub Command1_Click()
-
 Init
+   ActivateSpeak ("Starting...")
 getData
 'parseNews ("")
 End Sub
 
 Function Init()
-    Set tts = CreateObject("SAPI.spVoice")
-    SpeakHeadLine = ""
     Timer1.Enabled = True
     Timer2.Enabled = True
     lastNews = ""
@@ -190,9 +188,11 @@ End
 End Sub
 
 Private Sub Form_Load()
+    Set tts = CreateObject("SAPI.spVoice")
     wb.AddressBar = True
     wb.Silent = True
     wb.Navigate "http://www.google.ca", 4
+    ActivateSpeak ("Hello Chris, How is your day....? Ready to start?")
 End Sub
 
 Private Sub Form_Resize()
@@ -242,6 +242,7 @@ If Len(Text1) > 20 And Text1 <> oldText Then
 Beep
 Beep
 Beep
+SpeakThisText = SpeakHeadLine
 tmrSpeak.Enabled = True
 End If
 Exit Sub
@@ -267,7 +268,7 @@ Dim what2 As String
 Dim pos As Integer
 
 
-'m = "breakingNews({\""url"":""http:\/\/www.cnbc.com\/2015\/10\/15\/early-movers-gs-bud-unh-mo-sbux-wmt-nflx-unh-more.html"",""id"":103080254,""headline"":""Early movers: GS, BUD, UNH, MO, SBUX, WMT, NFLX, UNH & more""});"
+m = "breakingNews({\""url"":""http:\/\/www.cnbc.com\/2015\/10\/15\/early-movers-gs-bud-unh-mo-sbux-wmt-nflx-unh-more.html"",""id"":103080254,""headline"":""Early movers: GS, BUD, UNH, MO, SBUX, WMT, NFLX, UNH & more""});"
 
 
 what = "url"":"
@@ -297,8 +298,8 @@ End Function
 
 Private Sub tmrSpeak_Timer()
 tmrSpeak.Enabled = False
-readAloud (SpeakHeadLine)
-SpeakHeadLine = ""
+readAloud (SpeakThisText)
+SpeakThisText = ""
 
 End Sub
 
@@ -309,7 +310,7 @@ If IsNumeric(Timer1.Interval) Then txtCounter = Timer1.Interval / 1000
 End Sub
 
 Private Sub txtRead_Change()
-readAloud txtRead
+ActivateSpeak (txtRead)
 End Sub
 
 Private Sub txturl_KeyPress(KeyAscii As Integer)
@@ -319,10 +320,14 @@ End Sub
 Private Sub wb_StatusTextChange(ByVal Text As String)
 txturl = wb.LocationURL
 End Sub
-
+Function ActivateSpeak(txt)
+    SpeakThisText = txt
+    tmrSpeak.Enabled = True
+End Function
 
 
 Function readAloud(txt As String) As String
-tts.Speak txt
+DoEvents
+tts.Speak txt, SVSFlagsAsync
 End Function
 
