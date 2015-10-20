@@ -69,7 +69,7 @@ Begin VB.Form w
    End
    Begin VB.CommandButton Command3 
       Cancel          =   -1  'True
-      Caption         =   "End"
+      Caption         =   "&Exit"
       Height          =   495
       Left            =   2550
       TabIndex        =   4
@@ -77,7 +77,7 @@ Begin VB.Form w
       Width           =   1215
    End
    Begin VB.CommandButton Command2 
-      Caption         =   "Stop"
+      Caption         =   "S&top"
       Height          =   495
       Left            =   1335
       TabIndex        =   3
@@ -118,7 +118,7 @@ Begin VB.Form w
       Width           =   19695
    End
    Begin VB.CommandButton Command1 
-      Caption         =   "Start"
+      Caption         =   "&Start"
       Height          =   495
       Left            =   120
       TabIndex        =   0
