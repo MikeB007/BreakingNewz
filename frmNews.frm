@@ -1,6 +1,6 @@
 VERSION 5.00
-Object = "{48E59290-9880-11CF-9754-00AA00C00908}#1.0#0"; "msinet.ocx"
 Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "ieframe.dll"
+Object = "{48E59290-9880-11CF-9754-00AA00C00908}#1.0#0"; "msinet.ocx"
 Begin VB.Form w 
    Caption         =   "Breaking News"
    ClientHeight    =   10455
@@ -14,6 +14,20 @@ Begin VB.Form w
    ScaleHeight     =   10455
    ScaleWidth      =   19875
    StartUpPosition =   3  'Windows Default
+   Begin VB.TextBox txtRead 
+      Height          =   285
+      Left            =   120
+      MultiLine       =   -1  'True
+      TabIndex        =   9
+      Top             =   720
+      Width           =   19095
+   End
+   Begin VB.Timer tmrSpeak 
+      Enabled         =   0   'False
+      Interval        =   500
+      Left            =   9960
+      Top             =   240
+   End
    Begin SHDocVwCtl.WebBrowser wb 
       Height          =   4575
       Left            =   240
@@ -145,14 +159,19 @@ Option Explicit
 Dim lastNews As String
 Dim i As Integer
 Dim oldText As String
+Dim tts
+Dim SpeakHeadLine As String
 
 Private Sub Command1_Click()
+
 Init
 getData
 'parseNews ("")
 End Sub
 
 Function Init()
+    Set tts = CreateObject("SAPI.spVoice")
+    SpeakHeadLine = ""
     Timer1.Enabled = True
     Timer2.Enabled = True
     lastNews = ""
@@ -223,6 +242,7 @@ If Len(Text1) > 20 And Text1 <> oldText Then
 Beep
 Beep
 Beep
+tmrSpeak.Enabled = True
 End If
 Exit Sub
 weberror:
@@ -264,7 +284,7 @@ pos = InStr(1, m, what2, vbTextCompare)
 
 headline = Mid(m, pos + Len(what2) + 1)
 headline = Mid(headline, 1, Len(headline) - 4)
-
+SpeakHeadLine = headline
 'MsgBox m
 'MsgBox InStr(1, m, what2, vbTextCompare)
 'MsgBox Mid(m, InStr(1, m, what2, vbTextCompare) + Len(what2))
@@ -275,10 +295,21 @@ wb.Navigate url, 4
 parseNews = Format(Now(), "mmm-dd hh:mm") & " - " & headline & "(" & id & ")"
 End Function
 
+Private Sub tmrSpeak_Timer()
+tmrSpeak.Enabled = False
+readAloud (SpeakHeadLine)
+SpeakHeadLine = ""
+
+End Sub
+
 Private Sub txtInterval_Change()
 Timer1.Interval = Val(txtInterval)
 i = 0
 If IsNumeric(Timer1.Interval) Then txtCounter = Timer1.Interval / 1000
+End Sub
+
+Private Sub txtRead_Change()
+readAloud txtRead
 End Sub
 
 Private Sub txturl_KeyPress(KeyAscii As Integer)
@@ -288,3 +319,10 @@ End Sub
 Private Sub wb_StatusTextChange(ByVal Text As String)
 txturl = wb.LocationURL
 End Sub
+
+
+
+Function readAloud(txt As String) As String
+tts.Speak txt
+End Function
+

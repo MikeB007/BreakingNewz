@@ -1,8 +1,9 @@
 Type=Exe
-Form=frmNews.frm
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\Windows\SysWOW64\stdole2.tlb#OLE Automation
-Object={48E59290-9880-11CF-9754-00AA00C00908}#1.0#0; msinet.ocx
 Object={EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0; ieframe.dll
+Reference=*\G{C866CA3A-32F7-11D2-9602-00C04F8EE628}#5.4#0#..\..\WINDOWS\System32\Speech\Common\sapi.dll#Microsoft Speech Object Library
+Object={48E59290-9880-11CF-9754-00AA00C00908}#1.0#0; msinet.ocx
+Form=frmNews.frm
 IconForm="w"
 Startup="w"
 HelpFile=""
