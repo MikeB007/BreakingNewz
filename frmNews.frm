@@ -14,6 +14,24 @@ Begin VB.Form w
    ScaleHeight     =   10455
    ScaleWidth      =   19875
    StartUpPosition =   3  'Windows Default
+   Begin VB.OptionButton optV 
+      Caption         =   "She"
+      Height          =   255
+      Index           =   1
+      Left            =   6960
+      TabIndex        =   11
+      Top             =   360
+      Width           =   615
+   End
+   Begin VB.OptionButton optV 
+      Caption         =   "He"
+      Height          =   255
+      Index           =   0
+      Left            =   6960
+      TabIndex        =   10
+      Top             =   120
+      Width           =   615
+   End
    Begin VB.TextBox txtRead 
       Height          =   285
       Left            =   120
@@ -78,7 +96,7 @@ Begin VB.Form w
    Begin VB.Timer Timer2 
       Enabled         =   0   'False
       Interval        =   1000
-      Left            =   8640
+      Left            =   9000
       Top             =   240
    End
    Begin VB.CommandButton Command3 
@@ -140,7 +158,7 @@ Begin VB.Form w
       Width           =   1215
    End
    Begin InetCtlsObjects.Inet Inet1 
-      Left            =   7320
+      Left            =   8400
       Top             =   240
       _ExtentX        =   1005
       _ExtentY        =   1005
@@ -193,7 +211,8 @@ End Sub
 
 Private Sub Form_Load()
     Set tts = CreateObject("SAPI.spVoice")
-    Set tts.Voice = tts.GetVoices().Item(0)
+     optV.Item(1).Value = True
+    Set tts.Voice = tts.GetVoices().Item(1)
                
     wb.AddressBar = True
     wb.Silent = True
@@ -213,6 +232,10 @@ End Sub
 
 Private Sub Inet1_StateChanged(ByVal State As Integer)
 'MsgBox State
+End Sub
+
+Private Sub optV_Click(Index As Integer)
+    Set tts.Voice = tts.GetVoices().Item(Index)
 End Sub
 
 Private Sub Timer1_Timer()
