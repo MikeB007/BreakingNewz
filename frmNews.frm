@@ -20,7 +20,7 @@ Begin VB.Form w
       MultiLine       =   -1  'True
       TabIndex        =   9
       Top             =   720
-      Width           =   19095
+      Width           =   12135
    End
    Begin VB.Timer tmrSpeak 
       Enabled         =   0   'False
@@ -159,7 +159,11 @@ Option Explicit
 Dim lastNews As String
 Dim i As Integer
 Dim oldText As String
-Dim tts
+Private V As SpeechLib.SpVoice
+Private T As SpeechLib.ISpeechObjectToken
+
+
+Dim tts  As SpeechLib.SpVoice
 Dim SpeakHeadLine As String
 Dim SpeakThisText As String
 Private Sub Command1_Click()
@@ -189,10 +193,12 @@ End Sub
 
 Private Sub Form_Load()
     Set tts = CreateObject("SAPI.spVoice")
+    Set tts.Voice = tts.GetVoices().Item(0)
+               
     wb.AddressBar = True
     wb.Silent = True
     wb.Navigate "http://www.google.ca", 4
-    ActivateSpeak ("Hello Chris, How is your day....? Ready to start?")
+    ActivateSpeak ("Today is: " & Format(Now(), "mmm dd hhmm"))
 End Sub
 
 Private Sub Form_Resize()
@@ -268,7 +274,7 @@ Dim what2 As String
 Dim pos As Integer
 
 
-m = "breakingNews({\""url"":""http:\/\/www.cnbc.com\/2015\/10\/15\/early-movers-gs-bud-unh-mo-sbux-wmt-nflx-unh-more.html"",""id"":103080254,""headline"":""Early movers: GS, BUD, UNH, MO, SBUX, WMT, NFLX, UNH & more""});"
+'m = "breakingNews({\""url"":""http:\/\/www.cnbc.com\/2015\/10\/15\/early-movers-gs-bud-unh-mo-sbux-wmt-nflx-unh-more.html"",""id"":103080254,""headline"":""Early movers: GS, BUD, UNH, MO, SBUX, WMT, NFLX, UNH & more""});"
 
 
 what = "url"":"
