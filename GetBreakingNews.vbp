@@ -4,6 +4,7 @@ Object={EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0; ieframe.dll
 Reference=*\G{C866CA3A-32F7-11D2-9602-00C04F8EE628}#5.4#0#..\..\WINDOWS\System32\Speech\Common\sapi.dll#Microsoft Speech Object Library
 Object={48E59290-9880-11CF-9754-00AA00C00908}#1.0#0; msinet.ocx
 Form=frmNews.frm
+Object={20C62CAE-15DA-101B-B9A8-444553540000}#1.1#0; MSMAPI32.OCX
 IconForm="w"
 Startup="w"
 HelpFile=""

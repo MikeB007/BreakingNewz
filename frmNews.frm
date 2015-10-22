@@ -179,7 +179,7 @@ Dim i As Integer
 Dim oldText As String
 Private V As SpeechLib.SpVoice
 Private T As SpeechLib.ISpeechObjectToken
-
+Dim mailcount As Integer
 
 Dim tts  As SpeechLib.SpVoice
 Dim SpeakHeadLine As String
@@ -192,6 +192,7 @@ getData
 End Sub
 
 Function Init()
+sendmail "hey Sylvia", "This is message from laptop"
     Timer1.Enabled = True
     Timer2.Enabled = True
     lastNews = ""
@@ -210,7 +211,7 @@ End
 End Sub
 
 Private Sub Form_Load()
-    Set tts = CreateObject("SAPI.spVoice")
+Set tts = CreateObject("SAPI.spVoice")
      optV.Item(1).Value = True
     Set tts.Voice = tts.GetVoices().Item(1)
                
@@ -272,6 +273,7 @@ Beep
 Beep
 Beep
 SpeakThisText = SpeakHeadLine
+'sendmail "Headline", SpeakHeadLine
 tmrSpeak.Enabled = True
 End If
 Exit Sub
@@ -360,3 +362,45 @@ DoEvents
 tts.Speak txt, SVSFlagsAsync
 End Function
 
+Sub sendmail(hd As String, body As String)
+Dim iMsg As Object
+Dim iConf As Object
+
+Dim Flds As Variant
+
+Set iMsg = CreateObject("CDO.Message")
+Set iConf = CreateObject("CDO.Configuration")
+
+iConf.Load -1 ' CDO Source Defaults
+Set Flds = iConf.Fields
+With Flds
+.Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = True
+.Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
+.Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "kogutc@gmail.com"
+.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "Ilms2009"
+.Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = "smtp.gmail.com"
+.Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+.Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 465
+.Update
+End With
+
+With iMsg
+Set .Configuration = iConf
+.To = "KOGUTC2@td.COM"
+.CC = ""
+.BCC = ""
+' Note: The reply address is not working if you use this Gmail example
+' It will use your Gmail address automatic. But you can add this line
+' to change the reply address .ReplyTo = "Reply@something.com"
+.From = "kogutc@gmail.com"
+.Subject = hd
+'.TextBody = ""
+.HTMLBody = "<html> <Body><i><font color=""Green"">" & body & "</font>" & Now() & "</i><body></html>"
+
+.Send
+mailcount = mailcount + 1
+If mailcount > 100 Then End
+
+End With
+
+End Sub
