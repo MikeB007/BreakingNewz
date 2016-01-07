@@ -192,7 +192,7 @@ getData
 End Sub
 
 Function Init()
-sendmail "hey Sylvia", "This is message from laptop"
+'sendmail "hey Sylvia", "This is message from laptop"
     Timer1.Enabled = True
     Timer2.Enabled = True
     lastNews = ""
@@ -219,6 +219,8 @@ Set tts = CreateObject("SAPI.spVoice")
     wb.Silent = True
     wb.Navigate "http://www.google.ca", 4
     ActivateSpeak ("Today is: " & Format(Now(), "mmm dd hhmm"))
+    Init
+    
 End Sub
 
 Private Sub Form_Resize()
