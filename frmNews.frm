@@ -6,14 +6,58 @@ Begin VB.Form w
    ClientHeight    =   10455
    ClientLeft      =   120
    ClientTop       =   465
-   ClientWidth     =   19875
+   ClientWidth     =   27195
    FillColor       =   &H00C0FFC0&
    ForeColor       =   &H00C0FFC0&
    Icon            =   "frmNews.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   10455
-   ScaleWidth      =   19875
+   ScaleWidth      =   27195
    StartUpPosition =   3  'Windows Default
+   Begin SHDocVwCtl.WebBrowser wb2 
+      Height          =   7695
+      Left            =   19680
+      TabIndex        =   13
+      Top             =   2280
+      Width           =   6615
+      ExtentX         =   11668
+      ExtentY         =   13573
+      ViewMode        =   0
+      Offline         =   0
+      Silent          =   0
+      RegisterAsBrowser=   0
+      RegisterAsDropTarget=   1
+      AutoArrange     =   0   'False
+      NoClientEdge    =   0   'False
+      AlignLeft       =   0   'False
+      NoWebView       =   0   'False
+      HideFileNames   =   0   'False
+      SingleClick     =   0   'False
+      SingleSelection =   0   'False
+      NoFolders       =   0   'False
+      Transparent     =   0   'False
+      ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
+      Location        =   ""
+   End
+   Begin VB.TextBox txtReuters 
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   9.75
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   -1  'True
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000FF&
+      Height          =   1935
+      Left            =   20160
+      MultiLine       =   -1  'True
+      ScrollBars      =   3  'Both
+      TabIndex        =   12
+      Top             =   120
+      Width           =   6135
+   End
    Begin VB.OptionButton optV 
       Caption         =   "She"
       Height          =   255
@@ -174,11 +218,13 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+
 Dim lastNews As String
 Dim i As Integer
 Dim oldText As String
 Private V As SpeechLib.SpVoice
-Private T As SpeechLib.ISpeechObjectToken
+Private t As SpeechLib.ISpeechObjectToken
 Dim mailcount As Integer
 
 Dim tts  As SpeechLib.SpVoice
@@ -197,7 +243,7 @@ Function Init()
     Timer2.Enabled = True
     lastNews = ""
     Timer1.Interval = Val(txtInterval)
-
+    wb2.Navigate "http://www.google.ca", 4
 End Function
 
 Private Sub Command2_Click()
@@ -256,9 +302,13 @@ End Sub
 Private Sub getData()
 On Error GoTo weberror
 Dim msg As String
+Dim t As String
+Dim pos As Integer
+Dim url As String
+Dim msg2 As String
+Dim slp As Integer
 
-
-Text1 = "Getting Data..."
+slp = 0
 Text1.Text = Inet1.OpenURL("http://www.cnbc.com/franchise/20991458?callback=breakingNews&mode=breaking_news")
 
 'http://quote.cnbc.com/quote-html-webservice/quote.htm?callback=webQuoteRequest&symbols=TD.TO&symbolType=symbol&requestMethod=quick&exthrs=1&extMode=&fund=1&entitlement=0&skipcache=&extendedMask=1&partnerId=2&output=jsonp&noform=1
@@ -268,16 +318,36 @@ Text1.Text = Inet1.OpenURL("http://www.cnbc.com/franchise/20991458?callback=brea
 'http://apps.cnbc.com/view.asp?uid=stocks/financials&view=incomeStatement&symbol=TD.TO
 'http://data.cnbc.com/quotes/TD.TO
 If Len(Text1) > 20 And Text1 <> oldText Then
+    slp = 10000
     oldText = Text1
     lastNews = parseNews(Text1)
     Text2 = lastNews & vbCrLf & Text2
-Beep
-Beep
-Beep
-SpeakThisText = SpeakHeadLine
-'sendmail "Headline", SpeakHeadLine
-tmrSpeak.Enabled = True
+    Beep
+    Beep
+    Beep
+    SpeakThisText = SpeakHeadLine
+    'sendmail "Headline", SpeakHeadLine
+    tmrSpeak.Enabled = True
 End If
+
+
+t = Inet1.OpenURL("http://www.reuters.com/assets/breakingNews")
+'t = "<div id=""breakingNewsContainer"" class=""breakingStory""><div id=""breakingNewsUltra""> <div class=""breakingNewsContent""><h1><span class=""breakingNewsLabel"">Breaking News: </span><a href=""http://www.reuters.com/article/us-usa-stocks-idUSKBN0UL1BD20160107"">Stock futures tumble as China allows yuan to fall further</a></h1>"
+pos = InStr(t, "Breaking News:")
+If pos > 0 Then
+    t = Mid(t, pos + Len("Breaking News:") + 17)
+    pos = InStr(t, ">")
+    url = Mid(t, 1, pos - 2)
+    msg2 = Mid(t, pos + 1)
+    msg2 = Mid(msg2, 1, Len(msg2) - 9)
+    txtReuters = txtReuters & vbCrLf & msg2
+    wb2.AddressBar = True
+    wb2.Silent = True
+    wb2.Navigate url, 4
+    Sleep slp
+    ActivateSpeak (msg2)
+End If
+
 Exit Sub
 weberror:
 Text2 = Text2 & "____Error:" & Err.Description
@@ -302,6 +372,20 @@ Dim pos As Integer
 
 
 'm = "breakingNews({\""url"":""http:\/\/www.cnbc.com\/2015\/10\/15\/early-movers-gs-bud-unh-mo-sbux-wmt-nflx-unh-more.html"",""id"":103080254,""headline"":""Early movers: GS, BUD, UNH, MO, SBUX, WMT, NFLX, UNH & more""});"
+'
+'REUTERS
+'http://www.reuters.com/assets/breakingNews
+
+'<div id="breakingNewsContainer" class="breakingStory">
+'                        <div id="breakingNewsUltra">
+'                            <div class="breakingNewsContent">
+'                                <h1>
+'                                    <span class="breakingNewsLabel">Breaking News: </span><a href="http://www.reuters.com/article/us-usa-stocks-idUSKBN0UL1BD20160107">Stock futures tumble as China allows yuan to fall further</a></h1>
+'                            </div>
+'                        </div>
+'                    </div>
+'<div class="linebreak"></div>
+
 
 
 what = "url"":"
@@ -379,7 +463,7 @@ With Flds
 .Item("http://schemas.microsoft.com/cdo/configuration/smtpusessl") = True
 .Item("http://schemas.microsoft.com/cdo/configuration/smtpauthenticate") = 1
 .Item("http://schemas.microsoft.com/cdo/configuration/sendusername") = "kogutc@gmail.com"
-.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = "Ilms2009"
+.Item("http://schemas.microsoft.com/cdo/configuration/sendpassword") = ""
 .Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = "smtp.gmail.com"
 .Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
 .Item("http://schemas.microsoft.com/cdo/configuration/smtpserverport") = 465
